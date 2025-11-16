@@ -1,10 +1,7 @@
-// backend/src/models/product.model.js
 const { sql, getPool } = require('../config/database');
 
 class ProductModel {
-  /**
-   * Get paginated products with filtering and sorting
-   */
+  
   static async getPaginatedProducts({
     page = 1,
     limit = 5,
@@ -52,13 +49,11 @@ class ProductModel {
         request.input('dateTo', sql.DateTime, new Date(dateTo));
       }
 
-      // Sanitize sortBy
       const validSortColumns = ['PRODUCTID', 'PRODUCTNAME', 'PRICE', 'STOCK', 'CREATED_AT'];
       if (!validSortColumns.includes(sortBy.toUpperCase())) {
         sortBy = 'PRODUCTID';
       }
       
-      // Sanitize sortOrder
       if (sortOrder.toUpperCase() !== 'ASC' && sortOrder.toUpperCase() !== 'DESC') {
         sortOrder = 'DESC';
       }
@@ -80,9 +75,6 @@ class ProductModel {
     }
   }
 
-  /**
-   * Get total count of products for pagination (with filters)
-   */
   static async getTotalProductCount({
     searchTerm = '',
     priceMin,
@@ -133,13 +125,6 @@ class ProductModel {
     }
   }
 
-  // ... (keep all other methods: getAllProducts, getProductById, createProduct, updateProduct, deleteProduct, etc.)
-  // ... (getAllProducts is no longer used by the main list but good to keep)
-
-  /**
-   * Get all products
-   * @returns {Promise<Array>} Array of products
-   */
   static async getAllProducts() {
     try {
       const pool = await getPool();
@@ -151,11 +136,6 @@ class ProductModel {
     }
   }
 
-  /**
-   * Get product by ID
-   * @param {number} id - Product ID
-   * @returns {Promise<Object|null>} Product object or null
-   */
   static async getProductById(id) {
     try {
       const pool = await getPool();
@@ -169,14 +149,6 @@ class ProductModel {
     }
   }
 
-  /**
-   * Create new product
-   * @param {Object} productData - Product data
-   * @param {string} productData.name - Product name
-   * @param {number} productData.price - Product price
-   * @param {number} productData.stock - Product stock
-   * @returns {Promise<Object>} Created product
-   */
   static async createProduct({ name, price, stock }) {
     try {
       const pool = await getPool();
@@ -196,15 +168,6 @@ class ProductModel {
     }
   }
 
-  /**
-   * Update product by ID
-   * @param {number} id - Product ID
-   * @param {Object} productData - Product data
-   * @param {string} productData.name - Product name
-   * @param {number} productData.price - Product price
-   * @param {number} productData.stock - Product stock
-   * @returns {Promise<Object|null>} Updated product or null
-   */
   static async updateProduct(id, { name, price, stock }) {
     try {
       const pool = await getPool();
@@ -226,11 +189,6 @@ class ProductModel {
     }
   }
 
-  /**
-   * Delete product by ID
-   * @param {number} id - Product ID
-   * @returns {Promise<Object|null>} Deleted product or null
-   */
   static async deleteProduct(id) {
     try {
       const pool = await getPool();
@@ -242,7 +200,6 @@ class ProductModel {
         return null;
       }
       
-      // Then delete it
       await pool.request()
         .input('id', sql.Int, id)
         .query('DELETE FROM PRODUCTS WHERE PRODUCTID = @id');
@@ -253,11 +210,6 @@ class ProductModel {
     }
   }
 
-  /**
-   * Check if product exists
-   * @param {number} id - Product ID
-   * @returns {Promise<boolean>} True if exists, false otherwise
-   */
   static async productExists(id) {
     try {
       const product = await this.getProductById(id);
@@ -267,11 +219,6 @@ class ProductModel {
     }
   }
 
-  /**
-   * Search products by name
-   * @param {string} searchTerm - Search term
-   * @returns {Promise<Array>} Array of matching products
-   */
   static async searchProducts(searchTerm) {
     try {
       const pool = await getPool();

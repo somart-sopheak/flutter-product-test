@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'
     show kIsWeb, defaultTargetPlatform, TargetPlatform;
+import 'package:flutter_product/presentation/screens/product_list_screens.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/product_provider.dart';
-import 'presentation/screens/product_list_screen.dart';
 import 'config/theme.dart';
 import 'services/api_service.dart';
 
@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Product Manager Pro',
         theme: AppTheme.lightTheme,
-        home: ProductListScreen(),
+        home: ProductListScreens(),
         debugShowCheckedModeBanner: false,
       ),
     );

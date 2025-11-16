@@ -26,10 +26,6 @@ class Product {
   });
 }
 
-// ---------------------------------------------------------------------------
-// Mock repository that simulates paginated server responses locally.
-// Use `fetchPage` to request a page with optional search/sort.
-// ---------------------------------------------------------------------------
 enum SortBy { none, price, stock }
 
 class MockProductRepository {
@@ -83,14 +79,6 @@ class MockProductRepository {
   }
 }
 
-// ---------------------------------------------------------------------------
-// ProductListPage - self-contained stateful widget
-// - Debounced search (500ms)
-// - Sort by price/stock asc/desc
-// - Infinite scroll (20 per page)
-// - Export visible items to CSV/PDF
-// - Professional card-based design
-// ---------------------------------------------------------------------------
 class ProductListPage extends StatefulWidget {
   const ProductListPage({Key? key}) : super(key: key);
 
@@ -373,6 +361,47 @@ class _ProductListPageState extends State<ProductListPage> {
 
   @override
   Widget build(BuildContext context) {
+    var expanded = Expanded(
+              child: RefreshIndicator(
+                onRefresh: _onRefresh,
+                child:
+                    _isInitial && _isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : ListView.builder(
+                          controller: _scrollController,
+                          itemCount:
+                              _items.length +
+                              1, // additional slot for loader / no-more
+                          itemBuilder: (context, index) {
+                            if (index < _items.length) {
+                              return _buildProductCard(_items[index]);
+                            }
+
+                            // Footer: loading indicator OR No more products
+                            if (_isLoading) {
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 20),
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+                            }
+                            if (!_hasMore) {
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 20),
+                                child: Center(
+                                  child: Text(
+                                    'No more products',
+                                    style: TextStyle(color: Colors.black54),
+                                  ),
+                                ),
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
+              ),
+            );
     return Scaffold(
       appBar: AppBar(
         title: const Text('Products'),
@@ -453,47 +482,7 @@ class _ProductListPageState extends State<ProductListPage> {
               ),
             ),
 
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: _onRefresh,
-                child:
-                    _isInitial && _isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : ListView.builder(
-                          controller: _scrollController,
-                          itemCount:
-                              _items.length +
-                              1, // additional slot for loader / no-more
-                          itemBuilder: (context, index) {
-                            if (index < _items.length) {
-                              return _buildProductCard(_items[index]);
-                            }
-
-                            // Footer: loading indicator OR No more products
-                            if (_isLoading) {
-                              return const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 20),
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            }
-                            if (!_hasMore) {
-                              return const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 20),
-                                child: Center(
-                                  child: Text(
-                                    'No more products',
-                                    style: TextStyle(color: Colors.black54),
-                                  ),
-                                ),
-                              );
-                            }
-                            return const SizedBox.shrink();
-                          },
-                        ),
-              ),
-            ),
+            expanded,
           ],
         ),
       ),
@@ -505,10 +494,3 @@ class _ProductListPageState extends State<ProductListPage> {
     );
   }
 }
-
-// ---------------------------------------------------------------------------
-// Usage:
-// Paste this file into `lib/screens/product_list_demo.dart` and open
-// by pushing `ProductListPage()` in your navigator or setting as `home`.
-// Ensure `syncfusion_flutter_pdf`, `csv`, and `path_provider` are in pubspec.yaml
-// ---------------------------------------------------------------------------

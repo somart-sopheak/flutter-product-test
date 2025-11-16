@@ -8,9 +8,7 @@ class ApiService {
   final String baseUrl;
 
   ApiService({this.baseUrl = 'http://10.0.2.2:3000/api'});
-  // For Android emulator use 10.0.2.2 instead of localhost
 
-  /// Helper to build query parameters
   Map<String, String> _buildQueryParams({
     String searchTerm = '',
     SortBy sortBy = SortBy.none,
@@ -52,7 +50,6 @@ class ApiService {
     return params;
   }
 
-  /// Fetches a single page of products from the API
   Future<Map<String, dynamic>> fetchProductsPage({
     required int page,
     required int limit,
@@ -83,18 +80,17 @@ class ApiService {
     params['limit'] = limit.toString();
 
     final uri = Uri.parse('$baseUrl/products').replace(queryParameters: params);
-    
+
     final res = await http.get(uri);
 
     if (res.statusCode == 200) {
       final body = json.decode(res.body);
-      return body as Map<String, dynamic>; // Returns { success, data, pagination }
+      return body as Map<String, dynamic>;
     }
 
     throw Exception('Failed to load products page: ${res.statusCode}');
   }
 
-  /// Fetches ALL products that match the filters (for export)
   Future<List<Product>> fetchAllProductsForExport({
     String searchTerm = '',
     SortBy sortBy = SortBy.none,
@@ -118,11 +114,10 @@ class ApiService {
       dateTo: dateTo,
     );
 
-    // Add the 'all=1' parameter to get all results
     params['all'] = '1';
 
     final uri = Uri.parse('$baseUrl/products').replace(queryParameters: params);
-    
+
     final res = await http.get(uri);
 
     if (res.statusCode == 200) {
@@ -131,14 +126,12 @@ class ApiService {
       return data.map((e) => Product.fromJson(e)).toList();
     }
 
-    throw Exception('Failed to load all products for export: ${res.statusCode}');
+    throw Exception(
+      'Failed to load all products for export: ${res.statusCode}',
+    );
   }
 
-  // This method is now obsolete for the list screen, but we leave it
-  // in case other parts of the app use it.
   Future<List<Product>> fetchProducts() async {
-    // Note: This will now only fetch the first page (defaulting to 5 items)
-    // To fix this, you could add a high limit:
     final res = await http.get(Uri.parse('$baseUrl/products?limit=1000'));
 
     if (res.statusCode == 200) {
@@ -149,9 +142,6 @@ class ApiService {
 
     throw Exception('Failed to load products: ${res.statusCode}');
   }
-
-  // ... (keep createProduct, updateProduct, deleteProduct)
-  // ... (These methods are unchanged)
 
   Future<Product> createProduct(Product p) async {
     final res = await http.post(

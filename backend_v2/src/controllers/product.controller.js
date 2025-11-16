@@ -1,14 +1,8 @@
-// backend/src/controllers/product.controller.js
 const ProductModel = require('../models/product.model');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/response');
 
 class ProductController {
-  /**
-   * Get all products (paginated) or product by ID
-   * GET /products
-   * GET /products?id=1
-   * GET /products?page=1&limit=10&q=...&sortBy=...
-   */
+
 static async getProducts(req, res, next) {
   try {
     const id = req.query.id || req.params.id;
@@ -103,21 +97,12 @@ static async getProducts(req, res, next) {
 }
 
 
-  // ... (keep all other methods: createProduct, updateProduct, deleteProduct, searchProducts)
-  // ... (the searchProducts controller is now mostly handled by getProducts, but we can leave it)
 
-  /**
-   * Create new product
-   * POST /products
-   */
   static async createProduct(req, res, next) {
     try {
-      // FIX: Changed from uppercase to lowercase
       const { name, price, stock } = req.body;
 
-      // Validation is handled by middleware, so data is clean here
       const productData = {
-        // FIX: Changed from uppercase to lowercase
         name: name.trim(),
         price: parseFloat(price),
         stock: parseInt(stock)
@@ -137,30 +122,22 @@ static async getProducts(req, res, next) {
     }
   }
 
-  /**
-   * Update product by ID
-   * PUT /products/:id
-   */
+
   static async updateProduct(req, res, next) {
     try {
-      // FIX: Read id from req.params
       const { id } = req.params;
-      // FIX: Changed from uppercase to lowercase
       const { name, price, stock } = req.body;
 
       if (!id) {
         return errorResponse(res, 'Product ID is required', 400);
       }
 
-      // Check if product exists
       const exists = await ProductModel.productExists(parseInt(id));
       if (!exists) {
         return errorResponse(res, 'Product not found', 404);
       }
 
-      // Validation is handled by middleware
       const productData = {
-        // FIX: Changed from uppercase to lowercase
         name: name.trim(),
         price: parseFloat(price),
         stock: parseInt(stock)
@@ -181,13 +158,8 @@ static async getProducts(req, res, next) {
     }
   }
 
-  /**
-   * Delete product by ID
-   * DELETE /products/:id
-   */
   static async deleteProduct(req, res, next) {
     try {
-      // FIX: Read id from req.params
       const { id } = req.params;
 
       if (!id) {
@@ -210,10 +182,6 @@ static async getProducts(req, res, next) {
     }
   }
 
-  /**
-   * Search products by name
-   * GET /products/search?q=searchTerm
-   */
   static async searchProducts(req, res, next) {
     try {
       const { q } = req.query;

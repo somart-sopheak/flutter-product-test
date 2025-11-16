@@ -1,28 +1,18 @@
 const { errorResponse } = require('../utils/response');
 
-/**
- * Validate product data
- */
 const validateProduct = (req, res, next) => {
-  // FIX: Changed from uppercase to lowercase
   const { name, price, stock } = req.body;
   const errors = [];
 
-  // Validate product name
-  // FIX: Changed from PRODUCTNAME to name
   if (!name || typeof name !== 'string' || name.trim() === '') {
     errors.push('Product name is required and cannot be empty');
-  // FIX: Changed from PRODUCTNAME to name
   } else if (name.trim().length > 100) {
     errors.push('Product name cannot exceed 100 characters');
   }
 
-  // Validate price
-  // FIX: Changed from PRICE to price
   if (price === undefined || price === null || price === '') {
     errors.push('Price is required');
   } else {
-    // FIX: Changed from PRICE to price
     const priceValue = parseFloat(price);
     if (isNaN(priceValue)) {
       errors.push('Price must be a valid number');
@@ -33,14 +23,10 @@ const validateProduct = (req, res, next) => {
     }
   }
 
-  // Validate stock
-  // FIX: Changed from STOCK to stock
   if (stock === undefined || stock === null || stock === '') {
     errors.push('Stock is required');
   } else {
-    // FIX: Changed from STOCK to stock
     const stockValue = parseInt(stock);
-    // FIX: Changed from STOCK to stock
     if (isNaN(stockValue) || !Number.isInteger(Number(stock))) {
       errors.push('Stock must be a valid integer');
     } else if (stockValue < 0) {
@@ -50,18 +36,12 @@ const validateProduct = (req, res, next) => {
     }
   }
 
-  // If there are validation errors, return them
   if (errors.length > 0) {
     return errorResponse(res, 'Validation failed', 400, errors);
   }
-
-  // Validation passed, proceed to next middleware
   next();
 };
 
-/**
- * Validate ID parameter
- */
 const validateId = (req, res, next) => {
   const { id } = req.query;
 
@@ -77,24 +57,15 @@ const validateId = (req, res, next) => {
   next();
 };
 
-/**
- * Sanitize input to prevent SQL injection (additional layer)
- */
 const sanitizeInput = (req, res, next) => {
-  // FIX: Changed from PRODUCTNAME to name
   if (req.body.name) {
-    // Remove any potentially dangerous characters
-    // FIX: Changed from PRODUCTNAME to name
     req.body.name = req.body.name
-      .replace(/[<>]/g, '') // Remove angle brackets
+      .replace(/[<>]/g, '') 
       .trim();
   }
   next();
 };
 
-/**
- * Validate request body exists
- */
 const validateBody = (req, res, next) => {
   if (!req.body || Object.keys(req.body).length === 0) {
     return errorResponse(res, 'Request body is required', 400);

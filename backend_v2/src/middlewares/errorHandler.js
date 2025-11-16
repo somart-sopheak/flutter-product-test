@@ -1,8 +1,6 @@
 const { errorResponse } = require('../utils/response');
 
-/**
- * Global error handler middleware
- */
+
 const errorHandler = (err, req, res, next) => {
   console.error('Error occurred:', {
     message: err.message,
@@ -12,7 +10,6 @@ const errorHandler = (err, req, res, next) => {
     timestamp: new Date().toISOString()
   });
 
-  // Database connection errors
   if (err.message.includes('connection') || err.message.includes('ECONNREFUSED')) {
     return errorResponse(
       res, 
@@ -22,7 +19,6 @@ const errorHandler = (err, req, res, next) => {
     );
   }
 
-  // SQL Server specific errors
   if (err.code === 'EREQUEST') {
     return errorResponse(
       res,
@@ -32,12 +28,10 @@ const errorHandler = (err, req, res, next) => {
     );
   }
 
-  // Validation errors
   if (err.name === 'ValidationError') {
     return errorResponse(res, err.message, 400);
   }
 
-  // Default error response
   return errorResponse(
     res,
     'Internal server error',
@@ -46,9 +40,7 @@ const errorHandler = (err, req, res, next) => {
   );
 };
 
-/**
- * 404 Not Found handler
- */
+
 const notFoundHandler = (req, res) => {
   return errorResponse(
     res,

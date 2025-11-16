@@ -45,10 +45,10 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
     final price = double.parse(_priceCtrl.text.trim());
     final stock = int.parse(_stockCtrl.text.trim());
     final prov = Provider.of<ProductProvider>(context, listen: false);
-    bool ok = false; // Default to false
+    bool ok = false; 
 
     if (widget.product == null) {
-      // --- This is ADD logic (unchanged) ---
+
       final confirm = await showDialog<bool>(
         context: context,
         builder:
